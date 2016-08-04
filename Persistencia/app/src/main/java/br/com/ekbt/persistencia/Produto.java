@@ -6,13 +6,13 @@ package br.com.ekbt.persistencia;
 public class Produto {
     private Integer id;
     private String produto;
-    private float preco;
+    private Double preco;
 
-    public float getPreco() {
+    public Double getPreco() {
         return preco;
     }
 
-    public void setPreco(float preco) {
+    public void setPreco(Double preco) {
         this.preco = preco;
     }
 

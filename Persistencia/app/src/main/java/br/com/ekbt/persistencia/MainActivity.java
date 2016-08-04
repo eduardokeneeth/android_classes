@@ -7,9 +7,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +39,16 @@ public class MainActivity extends AppCompatActivity {
 
         DBProduto db = new DBProduto(this);
         conn = db.getWritableDatabase();
+        carregaLista();
+
+        listProdutos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Produto produto = (Produto) listProdutos.getItemAtPosition(position);
+                preencherEdts(produto);
+                btnNovo.setEnabled(true);
+            }
+        });
     }
 
     public void gravar() {
@@ -82,5 +98,49 @@ public class MainActivity extends AppCompatActivity {
         String preco = edtPreco.getText().toString().trim();
         return (!TextUtils.isEmpty(produto)  && !TextUtils.isEmpty(preco));
     }
+
+    private void limpaTela() {
+        edtId.setText("");
+        edtProduto.setText("");
+        edtPreco.setText("");
+        edtProduto.requestFocus();
+    }
+
+    public void preencherEdts(Produto produto) {
+        if (produto != null) {
+            edtId.setText(produto.getId().toString());
+            edtProduto.setText(produto.getProduto().toString());
+            edtPreco.setText(produto.getPreco().toString());
+        }
+    }
+
+    public void msgCurta(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(conn != null) conn.close();
+        if(cursor != null) cursor.close();
+        super.onDestroy();
+    };
+
+    private void carregaLista() {
+        List<Produto> produtos = new ArrayList<>();
+
+        cursor = conn.query("TBL_PRODUTO", null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            Produto produto = new Produto();
+            produto.setId(cursor.getInt(cursor.getColumnIndex("ID")));
+            produto.setProduto(cursor.getString(cursor.getColumnIndex("NM_PRODUTO")));
+            produto.setPreco(cursor.getDouble(cursor.getColumnIndex("VL_PRECO_REAL")));
+            produtos.add(produto);
+            cursor.moveToNext();
+        }
+        ArrayAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, produtos);
+        listProdutos.setAdapter(adapter);
+    };
+
 
 }

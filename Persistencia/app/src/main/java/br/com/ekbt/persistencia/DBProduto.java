@@ -9,8 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DBProduto extends SQLiteOpenHelper {
 
+    private static final String DATABASE_NAME = "Loja.db";
+    private static final int DATABASE_VERSION = 2;
+
     public DBProduto(Context context) {
-        super(context, "pesquisaPreco", null, 3);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -18,7 +21,7 @@ public class DBProduto extends SQLiteOpenHelper {
         String sql = "CREATE TABLE TBL_PRODUTO ( " +
                      "ID INTEGER PRIMARY KEY, " +
                      "NM_PRODUTO TEXT, " +
-                     "VL_PRECO_REAL; )";
+                     "VL_PRECO_REAL )";
         sqLiteDatabase.execSQL(sql);
     }
 
